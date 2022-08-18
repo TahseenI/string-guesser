@@ -1,6 +1,6 @@
 /**
  * @file guesser.h
- * @author Tahseen
+ * @author Tahseen Intesar
  * @brief guessing the randomizer word
  * @version 0.1
  * @date 2022-08-17
@@ -10,58 +10,103 @@
  */
 
 #include <iostream>
+#include <algorithm>
+#include <unordered_map>
 #include "word-chooser.h"
 
 class Guesser
 {
     public:
-    
-    typedef enum {
-        NOT_IN_WORD = 0,     //"grey"
-        IN_WORD_WRONG_SPOT,  //"yellow"
-        IN_WORD_RIGHT_SPOT   //"green"
-    } charState_e;
-
-
-
-    Guesser(Word w)
+    Guesser()
     {
-        //get answer
-        this->answer = w.getAnswer();
-
-        //set all the stats
+        this->answer = new Word;
         this->initializeStats();
 
         std::cout << "guesser initialized\n\n";
-
     }
 
     void initializeStats()
     {
-        //get the size of the word
-        int s = this->answer.getSize();
+        //get the length of the word
+        int s = this->answer->getSize();
 
-        //set all the char states to NOT_IN_WORD
-        this->answer_chars = new charState_e[s];
+        found = new char[s];
+
+        //initialize char states to NOT_IN_WORD
         for(int i = 0; i < s; i++)
-        {
-            answer_chars[i] = NOT_IN_WORD;
-        }
+        {   
+            char a = this->answer->getAnswer().at(i);
 
-        //parse all unique characters
-        this->uniqueChars = new char[s];
+            uniques[a]++;
+            found[i] = '_';
+        }
         
     }
 
-    
+    void printBoard()
+    {
+        for (int i = 0; i < this->getAnswerLength(); i++)
+        {
+            std::cout << this->found[i];
+        }
+
+        std::cout << std::endl << std::endl;
+    }
+
+    void checkGuess(std::string guess)
+    {
+        //convert to uppercase
+        std::transform(guess.begin(), guess.end(), guess.begin(), ::toupper);
+
+        //right answer
+        if ( guess == this->getAnswer() )
+        {
+            this->solved = true;
+            return;
+        }
+
+        //wrong answer
+        for(int i = 0; i < this->getAnswerLength(); i++)
+        {
+            if(guess[i] == this->answer->getAnswer()[i])
+            {
+                found[i] = 'O';
+            }
+            else if (uniques.find(guess[i]) != uniques.end())
+            {
+                found[i] = 'X';
+            }
+            else
+            {
+                found[i] = '_';
+            }
+        }
+    }
+
+    std::string getAnswer()
+    {
+        return this->answer->getAnswer();
+    }
+
+    int getAnswerLength()
+    {
+        return this->answer->getAnswer().length();
+    }
+
+    bool isSolved()
+    {
+        return this->solved;
+    }
 
     private:
-    std::string answer;
+    Word *answer;
 
-    char uniqueChars[];
+    //get all unique chars in the answer, and count number
+    std::unordered_map<char, int> uniques;
+
+    //current state of the game
+    char *found;
 
     bool solved = false;
-
-    charState_e answer_chars[];
 };
 

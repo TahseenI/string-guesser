@@ -9,20 +9,33 @@
  * 
  */
 
-#include <iostream>
-//#include "guesser.h"
-#include "word-chooser.h"
+#include "guesser.h"
+//#include "word-chooser.h"
 
 int main()
 {
-    //test code
-    //Word word;
+    Guesser guess;
+    std::string userGuess = "";
 
-    Word word;
+    std::cout << "\nThe random word is: " << guess.getAnswer() << std::endl;
 
-    std::cout << "\nThe random word is: " << word.getAnswer() << std::endl;
+    std::cout << "Input a guess that is " << guess.getAnswerLength() << " letters long." << std::endl;
+    while(!guess.isSolved())
+    {
+        guess.printBoard();
+        std::cin >> userGuess;
 
-    //Guesser guess = new Guesser(word);
+        if (userGuess.length() != guess.getAnswerLength())
+        {
+            std::cout << "Please make sure that the guess is the right length." << std::endl;
+        }
+        else
+        {
+            guess.checkGuess(userGuess);
+        }
+    }
+
+    std::cout << "\n\nYou beat the game!" << std::endl;
 
     return 0;
 }
