@@ -12,6 +12,7 @@
 #include <iostream>
 #include <algorithm>
 #include <unordered_map>
+#include <utility>
 #include "word-chooser.h"
 
 class Guesser
@@ -40,7 +41,14 @@ class Guesser
             uniques[a]++;
             found[i] = '_';
         }
-        
+
+        counts = new int[uniques.size()];
+
+        int i = 0;
+        for( auto &it : uniques)
+        {
+            counts[i++] = it.second;
+        }        
     }
 
     void printBoard()
@@ -55,6 +63,8 @@ class Guesser
 
     void checkGuess(std::string guess)
     {
+        bool start = false;
+
         //convert to uppercase
         std::transform(guess.begin(), guess.end(), guess.begin(), ::toupper);
 
@@ -65,6 +75,13 @@ class Guesser
             return;
         }
 
+        //reset count of unique chars for the current guess
+        int i = 0;
+        for( auto &it : uniques)
+        {
+            counts[i++] = it.second;
+        }  
+        
         //wrong answer
         for(int i = 0; i < this->getAnswerLength(); i++)
         {
@@ -72,14 +89,22 @@ class Guesser
             {
                 found[i] = 'O';
             }
-            else if (uniques.find(guess[i]) != uniques.end())
+            else if (uniques.find(guess[i]) != uniques.end()) //character found in list
             {
-                found[i] = 'X';
+                if( (this->counts[i]) > 0)
+                {
+                    found[i] = 'X';
+                }
+                else
+                {
+                    found[i] = '_';
+                }
             }
-            else
+            else //character not found
             {
                 found[i] = '_';
             }
+            (this->counts[i])--;
         }
     }
 
@@ -101,10 +126,11 @@ class Guesser
     private:
     Word *answer;
 
-    //get all unique chars in the answer, and count number
+    //get all unique chars in the answer, and count the number of uniques
     std::unordered_map<char, int> uniques;
+    int *counts;
 
-    //current state of the game
+    //current state of the board
     char *found;
 
     bool solved = false;

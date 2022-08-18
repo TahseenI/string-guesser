@@ -10,7 +10,6 @@
  */
 
 #include "guesser.h"
-//#include "word-chooser.h"
 
 int main()
 {
@@ -19,7 +18,7 @@ int main()
 
     std::cout << "\nThe random word is: " << guess.getAnswer() << std::endl;
 
-    std::cout << "Input a guess that is " << guess.getAnswerLength() << " letters long." << std::endl;
+    std::cout << "Guess a word that is " << guess.getAnswerLength() << " letters long." << std::endl;
     while(!guess.isSolved())
     {
         guess.printBoard();
